@@ -1,4 +1,4 @@
-package entities
+package log
 
 // LogOptions Definition
 type LoggerOptions int64

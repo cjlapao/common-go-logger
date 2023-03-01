@@ -1,8 +1,6 @@
-package interfaces
+package log
 
 import (
-	"github.com/cjlapao/common-go-logger/entities"
-	"github.com/cjlapao/common-go-logger/icons"
 	"github.com/cjlapao/common-go/strcolor"
 )
 
@@ -13,9 +11,9 @@ type Logger interface {
 	UseIcons(value bool)
 
 	Init() Logger
-	Log(format string, level entities.Level, words ...interface{})
-	LogIcon(format string, icon icons.LoggerIcon, level entities.Level, words ...interface{})
-	LogHighlight(format string, level entities.Level, highlightColor strcolor.ColorCode, words ...interface{})
+	Log(format string, level Level, words ...interface{})
+	LogIcon(icon LoggerIcon, format string, level Level, words ...interface{})
+	LogHighlight(format string, level Level, highlightColor strcolor.ColorCode, words ...interface{})
 	Info(format string, words ...interface{})
 	Success(format string, words ...interface{})
 	TaskSuccess(format string, isComplete bool, words ...interface{})
