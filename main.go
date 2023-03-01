@@ -5,50 +5,49 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cjlapao/common-go-logger/constants"
-	"github.com/cjlapao/common-go-logger/entities"
-	"github.com/cjlapao/common-go-logger/icons"
-	"github.com/cjlapao/common-go-logger/interfaces"
 	strcolor "github.com/cjlapao/common-go/strcolor"
 )
 
-var globalLogger *Logger
+var globalLogger *LoggerService
 
 // Logger Default structure
-type Logger struct {
-	Loggers        []interfaces.Logger
-	LogLevel       entities.Level
+type LoggerService struct {
+	Loggers        []Logger
+	LogLevel       Level
 	HighlightColor strcolor.ColorCode
 	UseTimestamp   bool
 }
 
 // Get Creates a new Logger instance
-func Get() *Logger {
+func Get() *LoggerService {
 	if globalLogger == nil {
-		result := Logger{
-			LogLevel:       entities.Info,
-			HighlightColor: strcolor.BrightYellow,
-		}
-		result.Loggers = []interfaces.Logger{}
-		result.AddCmdLogger()
-
-		_logLevel := os.Getenv(constants.LOG_LEVEL)
-		if _logLevel == "debug" {
-			result.LogLevel = entities.Debug
-		}
-
-		if _logLevel == "trace" {
-			result.LogLevel = entities.Trace
-		}
-
-		globalLogger = &result
-		return &result
+		return New()
 	}
 
 	return globalLogger
 }
 
-func Register[T interfaces.Logger](value T) {
+func New() *LoggerService {
+	globalLogger = &LoggerService{
+		LogLevel:       Info,
+		HighlightColor: strcolor.BrightYellow,
+		Loggers:        []Logger{},
+	}
+
+	_logLevel := os.Getenv(LOG_LEVEL)
+	if _logLevel == "debug" {
+		globalLogger.LogLevel = Debug
+	}
+
+	if _logLevel == "trace" {
+		globalLogger.LogLevel = Trace
+	}
+
+	globalLogger.AddCmdLogger()
+	return globalLogger
+}
+
+func Register[T Logger](value T) {
 	l := Get()
 	found := false
 	newType := fmt.Sprintf("%T", value)
@@ -67,7 +66,7 @@ func Register[T interfaces.Logger](value T) {
 }
 
 // AddCmdLogger Add a command line logger to the system
-func (l *Logger) AddCmdLogger() {
+func (l *LoggerService) AddCmdLogger() {
 	Register(&CmdLogger{})
 }
 
@@ -89,36 +88,36 @@ func (l *Logger) AddCmdLogger() {
 // 	}
 // }
 
-func (l *Logger) WithDebug() *Logger {
-	l.LogLevel = entities.Debug
+func (l *LoggerService) WithDebug() *LoggerService {
+	l.LogLevel = Debug
 	return l
 }
 
-func (l *Logger) WithTrace() *Logger {
-	l.LogLevel = entities.Trace
+func (l *LoggerService) WithTrace() *LoggerService {
+	l.LogLevel = Trace
 	return l
 }
 
-func (l *Logger) WithWarning() *Logger {
-	l.LogLevel = entities.Warning
+func (l *LoggerService) WithWarning() *LoggerService {
+	l.LogLevel = Warning
 	return l
 }
 
-func (l *Logger) WithTimestamp() *Logger {
+func (l *LoggerService) WithTimestamp() *LoggerService {
 	for _, logger := range l.Loggers {
 		logger.UseTimestamp(true)
 	}
 	return l
 }
 
-func (l *Logger) WithCorrelationId() *Logger {
+func (l *LoggerService) WithCorrelationId() *LoggerService {
 	for _, logger := range l.Loggers {
 		logger.UseCorrelationId(true)
 	}
 	return l
 }
 
-func (l *Logger) WithIcons() *Logger {
+func (l *LoggerService) WithIcons() *LoggerService {
 	for _, logger := range l.Loggers {
 		logger.UseIcons(true)
 	}
@@ -126,29 +125,29 @@ func (l *Logger) WithIcons() *Logger {
 }
 
 // Log Log information message
-func (l *Logger) Log(format string, level entities.Level, words ...interface{}) {
+func (l *LoggerService) Log(format string, level Level, words ...interface{}) {
 	for _, logger := range l.Loggers {
 		logger.Log(format, level, words...)
 	}
 }
 
 // LogIcon Log message with custom icon
-func (l *Logger) LogIcon(format string, icon icons.LoggerIcon, level entities.Level, words ...interface{}) {
+func (l *LoggerService) LogIcon(icon LoggerIcon, format string, level Level, words ...interface{}) {
 	for _, logger := range l.Loggers {
-		logger.Log(format, level, words...)
+		logger.LogIcon(icon, format, level, words...)
 	}
 }
 
 // LogHighlight Log information message
-func (l *Logger) LogHighlight(format string, level entities.Level, words ...interface{}) {
+func (l *LoggerService) LogHighlight(format string, level Level, words ...interface{}) {
 	for _, logger := range l.Loggers {
 		logger.LogHighlight(format, level, l.HighlightColor, words...)
 	}
 }
 
 // Info log information message
-func (l *Logger) Info(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) Info(format string, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.Info(format, words...)
 		}
@@ -156,8 +155,8 @@ func (l *Logger) Info(format string, words ...interface{}) {
 }
 
 // Success log message
-func (l *Logger) Success(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) Success(format string, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.Success(format, words...)
 		}
@@ -165,8 +164,8 @@ func (l *Logger) Success(format string, words ...interface{}) {
 }
 
 // TaskSuccess log message
-func (l *Logger) TaskSuccess(format string, isComplete bool, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) TaskSuccess(format string, isComplete bool, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.TaskSuccess(format, isComplete, words...)
 		}
@@ -174,8 +173,8 @@ func (l *Logger) TaskSuccess(format string, isComplete bool, words ...interface{
 }
 
 // Warn log message
-func (l *Logger) Warn(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Warning {
+func (l *LoggerService) Warn(format string, words ...interface{}) {
+	if l.LogLevel >= Warning {
 		for _, logger := range l.Loggers {
 			logger.Warn(format, words...)
 		}
@@ -183,8 +182,8 @@ func (l *Logger) Warn(format string, words ...interface{}) {
 }
 
 // TaskWarn log message
-func (l *Logger) TaskWarn(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Warning {
+func (l *LoggerService) TaskWarn(format string, words ...interface{}) {
+	if l.LogLevel >= Warning {
 		for _, logger := range l.Loggers {
 			logger.TaskWarn(format, words...)
 		}
@@ -192,8 +191,8 @@ func (l *Logger) TaskWarn(format string, words ...interface{}) {
 }
 
 // Command log message
-func (l *Logger) Command(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) Command(format string, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.Command(format, words...)
 		}
@@ -201,8 +200,8 @@ func (l *Logger) Command(format string, words ...interface{}) {
 }
 
 // Disabled log message
-func (l *Logger) Disabled(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) Disabled(format string, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.Disabled(format, words...)
 		}
@@ -210,8 +209,8 @@ func (l *Logger) Disabled(format string, words ...interface{}) {
 }
 
 // Notice log message
-func (l *Logger) Notice(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Info {
+func (l *LoggerService) Notice(format string, words ...interface{}) {
+	if l.LogLevel >= Info {
 		for _, logger := range l.Loggers {
 			logger.Notice(format, words...)
 		}
@@ -219,8 +218,8 @@ func (l *Logger) Notice(format string, words ...interface{}) {
 }
 
 // Debug log message
-func (l *Logger) Debug(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Debug {
+func (l *LoggerService) Debug(format string, words ...interface{}) {
+	if l.LogLevel >= Debug {
 		for _, logger := range l.Loggers {
 			logger.Debug(format, words...)
 		}
@@ -228,8 +227,8 @@ func (l *Logger) Debug(format string, words ...interface{}) {
 }
 
 // Trace log message
-func (l *Logger) Trace(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Trace {
+func (l *LoggerService) Trace(format string, words ...interface{}) {
+	if l.LogLevel >= Trace {
 		for _, logger := range l.Loggers {
 			logger.Debug(format, words...)
 		}
@@ -237,8 +236,8 @@ func (l *Logger) Trace(format string, words ...interface{}) {
 }
 
 // Error log message
-func (l *Logger) Error(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Error {
+func (l *LoggerService) Error(format string, words ...interface{}) {
+	if l.LogLevel >= Error {
 		for _, logger := range l.Loggers {
 			logger.Error(format, words...)
 		}
@@ -246,8 +245,8 @@ func (l *Logger) Error(format string, words ...interface{}) {
 }
 
 // LogError log message
-func (l *Logger) LogError(message error) {
-	if l.LogLevel >= entities.Error {
+func (l *LoggerService) LogError(message error) {
+	if l.LogLevel >= Error {
 		if message != nil {
 			for _, logger := range l.Loggers {
 				logger.Error(message.Error())
@@ -257,8 +256,8 @@ func (l *Logger) LogError(message error) {
 }
 
 // Exception log message
-func (l *Logger) Exception(err error, format string, words ...interface{}) {
-	if l.LogLevel >= entities.Error {
+func (l *LoggerService) Exception(err error, format string, words ...interface{}) {
+	if l.LogLevel >= Error {
 		for _, logger := range l.Loggers {
 			logger.Exception(err, format, words...)
 		}
@@ -266,8 +265,8 @@ func (l *Logger) Exception(err error, format string, words ...interface{}) {
 }
 
 // TaskError log message
-func (l *Logger) TaskError(format string, isComplete bool, words ...interface{}) {
-	if l.LogLevel >= entities.Error {
+func (l *LoggerService) TaskError(format string, isComplete bool, words ...interface{}) {
+	if l.LogLevel >= Error {
 		for _, logger := range l.Loggers {
 			logger.TaskError(format, isComplete, words...)
 		}
@@ -275,8 +274,8 @@ func (l *Logger) TaskError(format string, isComplete bool, words ...interface{})
 }
 
 // Fatal log message
-func (l *Logger) Fatal(format string, words ...interface{}) {
-	if l.LogLevel >= entities.Error {
+func (l *LoggerService) Fatal(format string, words ...interface{}) {
+	if l.LogLevel >= Error {
 		for _, logger := range l.Loggers {
 			logger.Fatal(format, words...)
 		}
@@ -284,7 +283,7 @@ func (l *Logger) Fatal(format string, words ...interface{}) {
 }
 
 // FatalError log message
-func (l *Logger) FatalError(e error, format string, words ...interface{}) {
+func (l *LoggerService) FatalError(e error, format string, words ...interface{}) {
 	for _, logger := range l.Loggers {
 		logger.Error(format, words...)
 	}

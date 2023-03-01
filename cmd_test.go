@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/cjlapao/common-go-logger/entities"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -107,7 +106,7 @@ func TestCmdLogger_UseCorrelationId(t *testing.T) {
 func TestCmdLogger_Log(t *testing.T) {
 	type args struct {
 		format string
-		level  entities.Level
+		level  Level
 		words  []interface{}
 	}
 	tests := []struct {
@@ -119,7 +118,7 @@ func TestCmdLogger_Log(t *testing.T) {
 			name: "info",
 			args: args{
 				format: "%s",
-				level:  entities.Info,
+				level:  Info,
 				words: []interface{}{
 					"I am",
 				},
@@ -130,7 +129,7 @@ func TestCmdLogger_Log(t *testing.T) {
 			name: "info, no words",
 			args: args{
 				format: "just me",
-				level:  entities.Info,
+				level:  Info,
 			},
 			expect: "just me\x1b[0m\n",
 		},
@@ -138,7 +137,7 @@ func TestCmdLogger_Log(t *testing.T) {
 			name: "info, empty words",
 			args: args{
 				format: "just me",
-				level:  entities.Info,
+				level:  Info,
 				words:  []interface{}{},
 			},
 			expect: "just me\x1b[0m\n",
@@ -147,7 +146,7 @@ func TestCmdLogger_Log(t *testing.T) {
 			name: "error",
 			args: args{
 				format: "%s",
-				level:  entities.Error,
+				level:  Error,
 				words: []interface{}{
 					"some error",
 				},
@@ -158,7 +157,7 @@ func TestCmdLogger_Log(t *testing.T) {
 			name: "warn",
 			args: args{
 				format: "warning: %s",
-				level:  entities.Error,
+				level:  Error,
 				words: []interface{}{
 					"some warning",
 				},

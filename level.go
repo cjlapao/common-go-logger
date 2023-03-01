@@ -1,4 +1,4 @@
-package entities
+package log
 
 // Level Entity
 type Level int
