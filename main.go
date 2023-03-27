@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -291,4 +292,17 @@ func (l *LoggerService) FatalError(e error, format string, words ...interface{})
 	if e != nil {
 		panic(e)
 	}
+}
+
+func (l *LoggerService) GetRequestPrefix(r *http.Request, logUrl bool) string {
+	msg := ""
+	if r.Header.Get("X-Request-Id") != "" {
+		msg += fmt.Sprintf("[%s] ", r.Header.Get("X-Request-Id"))
+	}
+
+	if logUrl {
+		msg += fmt.Sprintf("[%s] [%s] ", r.Method, r.URL.Path)
+	}
+
+	return msg
 }
