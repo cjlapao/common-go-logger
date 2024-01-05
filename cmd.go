@@ -29,6 +29,10 @@ func (l CmdLogger) Init() Logger {
 	}
 }
 
+func (l *CmdLogger) IsTimestampEnabled() bool {
+	return l.useTimestamp
+}
+
 func (l *CmdLogger) UseTimestamp(value bool) {
 	l.useTimestamp = value
 }

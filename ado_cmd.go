@@ -29,6 +29,10 @@ func (l AdoCmdLogger) Init() Logger {
 	}
 }
 
+func (l *AdoCmdLogger) IsTimestampEnabled() bool {
+	return l.useTimestamp
+}
+
 func (l *AdoCmdLogger) UseTimestamp(value bool) {
 	l.useTimestamp = value
 }
