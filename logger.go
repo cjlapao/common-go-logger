@@ -6,6 +6,7 @@ import (
 
 // Logger Interface
 type Logger interface {
+	IsTimestampEnabled() bool
 	UseTimestamp(value bool)
 	UseCorrelationId(value bool)
 	UseIcons(value bool)
