@@ -118,6 +118,14 @@ func (l *LoggerService) ToggleTimestamp() *LoggerService {
 	return l
 }
 
+func (l *LoggerService) EnableTimestamp(value bool) *LoggerService {
+	for _, logger := range l.Loggers {
+		logger.UseTimestamp(value)
+	}
+
+	return l
+}
+
 func (l *LoggerService) WithCorrelationId() *LoggerService {
 	for _, logger := range l.Loggers {
 		logger.UseCorrelationId(true)
