@@ -63,7 +63,7 @@ func NewMockLogger() *LoggerService {
 		globalLogger.LogLevel = Trace
 	}
 
-	Register(&CmdLogger{})
+	Register(&MockLogger{})
 	return globalLogger
 }
 
