@@ -1,6 +1,6 @@
 module github.com/cjlapao/common-go-logger
 
-go 1.23
+go 1.22
 
 require (
 	github.com/cjlapao/common-go v0.0.37
