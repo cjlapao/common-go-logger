@@ -10,6 +10,13 @@ func (l *LoggerService) AddCmdLogger() {
 	Register(&CmdLogger{})
 }
 
+func (l *LoggerService) AddFileLogger(filename string) {
+	Register(&FileLogger{
+		useTimestamp: l.UseTimestamp,
+		filename:     filename,
+	})
+}
+
 func (l *LoggerService) WithDebug() *LoggerService {
 	l.LogLevel = Debug
 	return l
@@ -55,6 +62,7 @@ func (l *LoggerService) EnableTimestamp(value bool) *LoggerService {
 }
 
 func (l *LoggerService) WithCorrelationId() *LoggerService {
+	l.useCorrelationId = true
 	for _, logger := range l.Loggers {
 		logger.UseCorrelationId(true)
 	}
@@ -62,6 +70,7 @@ func (l *LoggerService) WithCorrelationId() *LoggerService {
 }
 
 func (l *LoggerService) WithIcons() *LoggerService {
+	l.useIcons = true
 	for _, logger := range l.Loggers {
 		logger.UseIcons(true)
 	}

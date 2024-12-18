@@ -12,10 +12,12 @@ var globalLogger *LoggerService
 
 // Logger Default structure
 type LoggerService struct {
-	Loggers        []Logger
-	LogLevel       Level
-	HighlightColor strcolor.ColorCode
-	UseTimestamp   bool
+	Loggers          []Logger
+	LogLevel         Level
+	HighlightColor   strcolor.ColorCode
+	UseTimestamp     bool
+	useIcons         bool
+	useCorrelationId bool
 }
 
 // Get Creates a new Logger instance
@@ -81,6 +83,9 @@ func Register[T Logger](value T) {
 
 	if !found {
 		logger := value.Init()
+		logger.UseTimestamp(l.UseTimestamp)
+		logger.UseIcons(l.useIcons)
+		logger.UseCorrelationId(l.useCorrelationId)
 		l.Loggers = append(l.Loggers, logger)
 	}
 }
