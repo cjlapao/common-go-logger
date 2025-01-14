@@ -8,8 +8,6 @@ import (
 	"time"
 
 	strcolor "github.com/cjlapao/common-go/strcolor"
-
-	"github.com/fatih/color"
 )
 
 // CmdLogger Command Line Logger implementation
@@ -49,15 +47,15 @@ func (l *CmdLogger) UseIcons(value bool) {
 func (l *CmdLogger) Log(format string, level Level, words ...interface{}) {
 	switch level {
 	case 0:
-		l.printMessage(format, "", "error", false, false, words...)
+		l.printMessage(format, "", "error", words...)
 	case 1:
-		l.printMessage(format, "", "warn", false, false, words...)
+		l.printMessage(format, "", "warn", words...)
 	case 2:
-		l.printMessage(format, "", "info", false, false, words...)
+		l.printMessage(format, "", "info", words...)
 	case 3:
-		l.printMessage(format, "", "debug", false, false, words...)
+		l.printMessage(format, "", "debug", words...)
 	case 4:
-		l.printMessage(format, "", "trace", false, false, words...)
+		l.printMessage(format, "", "trace", words...)
 	}
 }
 
@@ -65,15 +63,15 @@ func (l *CmdLogger) Log(format string, level Level, words ...interface{}) {
 func (l *CmdLogger) LogIcon(icon LoggerIcon, format string, level Level, words ...interface{}) {
 	switch level {
 	case 0:
-		l.printMessage(format, icon, "error", false, false, words...)
+		l.printMessage(format, icon, "error", words...)
 	case 1:
-		l.printMessage(format, icon, "warn", false, false, words...)
+		l.printMessage(format, icon, "warn", words...)
 	case 2:
-		l.printMessage(format, icon, "info", false, false, words...)
+		l.printMessage(format, icon, "info", words...)
 	case 3:
-		l.printMessage(format, icon, "debug", false, false, words...)
+		l.printMessage(format, icon, "debug", words...)
 	case 4:
-		l.printMessage(format, icon, "trace", false, false, words...)
+		l.printMessage(format, icon, "trace", words...)
 	}
 }
 
@@ -81,77 +79,67 @@ func (l *CmdLogger) LogIcon(icon LoggerIcon, format string, level Level, words .
 func (l *CmdLogger) LogHighlight(format string, level Level, highlightColor strcolor.ColorCode, words ...interface{}) {
 	if len(words) > 0 {
 		for i := range words {
-			words[i] = strcolor.GetColorString(strcolor.ColorCode(highlightColor), fmt.Sprintf("%s", words[i]))
+			words[i] = GetColorString(ColorCode(highlightColor), fmt.Sprintf("%v", words[i]))
 		}
 	}
 
 	switch level {
 	case 0:
-		l.printMessage(format, "", "error", false, false, words...)
+		l.printMessage(format, "", "error", words...)
 	case 1:
-		l.printMessage(format, "", "warn", false, false, words...)
+		l.printMessage(format, "", "warn", words...)
 	case 2:
-		l.printMessage(format, "", "info", false, false, words...)
+		l.printMessage(format, "", "info", words...)
 	case 3:
-		l.printMessage(format, "", "debug", false, false, words...)
+		l.printMessage(format, "", "debug", words...)
 	case 4:
-		l.printMessage(format, "", "trace", false, false, words...)
+		l.printMessage(format, "", "trace", words...)
 	}
 }
 
 // Info log information message
 func (l *CmdLogger) Info(format string, words ...interface{}) {
-	l.printMessage(format, IconInfo, "info", false, false, words...)
+	l.printMessage(format, IconInfo, "info", words...)
 }
 
 // Success log message
 func (l *CmdLogger) Success(format string, words ...interface{}) {
-	l.printMessage(format, IconThumbsUp, "success", false, false, words...)
-}
-
-// TaskSuccess log message
-func (l *CmdLogger) TaskSuccess(format string, isComplete bool, words ...interface{}) {
-	l.printMessage(format, "", "success", true, isComplete, words...)
+	l.printMessage(format, IconThumbsUp, "success", words...)
 }
 
 // Warn log message
 func (l *CmdLogger) Warn(format string, words ...interface{}) {
-	l.printMessage(format, IconWarning, "warn", false, false, words...)
-}
-
-// TaskWarn log message
-func (l *CmdLogger) TaskWarn(format string, words ...interface{}) {
-	l.printMessage(format, "", "warn", true, false, words...)
+	l.printMessage(format, IconWarning, "warn", words...)
 }
 
 // Command log message
 func (l *CmdLogger) Command(format string, words ...interface{}) {
-	l.printMessage(format, IconWrench, "command", false, false, words...)
+	l.printMessage(format, IconWrench, "command", words...)
 }
 
 // Disabled log message
 func (l *CmdLogger) Disabled(format string, words ...interface{}) {
-	l.printMessage(format, IconBlackSquare, "disabled", false, false, words...)
+	l.printMessage(format, IconBlackSquare, "disabled", words...)
 }
 
 // Notice log message
 func (l *CmdLogger) Notice(format string, words ...interface{}) {
-	l.printMessage(format, IconFlag, "notice", false, false, words...)
+	l.printMessage(format, IconFlag, "notice", words...)
 }
 
 // Debug log message
 func (l *CmdLogger) Debug(format string, words ...interface{}) {
-	l.printMessage(format, IconFire, "debug", false, false, words...)
+	l.printMessage(format, IconFire, "debug", words...)
 }
 
 // Trace log message
 func (l *CmdLogger) Trace(format string, words ...interface{}) {
-	l.printMessage(format, IconBulb, "trace", false, false, words...)
+	l.printMessage(format, IconBulb, "trace", words...)
 }
 
 // Error log message
 func (l *CmdLogger) Error(format string, words ...interface{}) {
-	l.printMessage(format, IconRevolvingLight, "error", false, false, words...)
+	l.printMessage(format, IconRevolvingLight, "error", words...)
 }
 
 // Error log message
@@ -161,24 +149,19 @@ func (l *CmdLogger) Exception(err error, format string, words ...interface{}) {
 	} else {
 		format = format + ", err " + err.Error()
 	}
-	l.printMessage(format, IconRevolvingLight, "error", false, false, words...)
+	l.printMessage(format, IconRevolvingLight, "error", words...)
 }
 
 // LogError log message
 func (l *CmdLogger) LogError(message error) {
 	if message != nil {
-		l.printMessage(message.Error(), IconRevolvingLight, "error", false, false)
+		l.printMessage(message.Error(), IconRevolvingLight, "error")
 	}
-}
-
-// TaskError log message
-func (l *CmdLogger) TaskError(format string, isComplete bool, words ...interface{}) {
-	l.printMessage(format, "", "error", true, isComplete, l.useTimestamp)
 }
 
 // Fatal log message
 func (l *CmdLogger) Fatal(format string, words ...interface{}) {
-	l.printMessage(format, IconRevolvingLight, "error", false, true, words...)
+	l.printMessage(format, IconRevolvingLight, "error", words...)
 }
 
 // FatalError log message
@@ -190,104 +173,82 @@ func (l *CmdLogger) FatalError(e error, format string, words ...interface{}) {
 }
 
 // printMessage Prints a message in the system
-func (l *CmdLogger) printMessage(format string, icon LoggerIcon, level string, isTask bool, isComplete bool, words ...interface{}) {
+func (l *CmdLogger) printMessage(format string, icon LoggerIcon, level string, words ...interface{}) {
+	// First format the arguments according to the format string
+	message := fmt.Sprintf(format, words...)
+
 	if l.useIcons && icon != "" {
-		format = fmt.Sprintf("%s %s", icon, format)
+		message = fmt.Sprintf("%s %s", icon, message)
 	}
 
 	if l.userCorrelationId {
 		correlationId := os.Getenv("CORRELATION_ID")
 		if correlationId != "" {
-			format = "[" + correlationId + "] " + format
+			message = "[" + correlationId + "] " + message
 		}
 	}
 
 	if l.useTimestamp {
-		format = fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), format)
+		message = fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), message)
 	}
 
-	format = format + "\u001b[0m" + "\n"
+	message = message + "\u001b[0m" + "\n"
 
-	successWriter := color.New(SuccessColor).FprintfFunc()
-	warningWriter := color.New(WarningColor).FprintfFunc()
-	errorWriter := color.New(ErrorColor).FprintfFunc()
-	debugWriter := color.New(DebugColor).FprintfFunc()
-	traceWriter := color.New(TraceColor).FprintfFunc()
-	infoWriter := color.New(InfoColor).FprintfFunc()
-	noticeWriter := color.New(NoticeColor).FprintfFunc()
-	commandWriter := color.New(CommandColor).FprintfFunc()
-	disableWriter := color.New(DisabledColor).FprintfFunc()
-
-	formattedWords := make([]interface{}, len(words))
-	if len(words) > 0 {
-		for i := range words {
-			word := ""
-			switch t := words[i].(type) {
-			case string:
-				word = t
-			default:
-				word = fmt.Sprintf("%v", words[i])
-			}
-
-			if word != "" {
-				word = strings.ReplaceAll(word, "\n\n", "\n")
-				if word[0] == 27 {
-					switch strings.ToLower(level) {
-					case "success":
-						word += "\u001b[" + fmt.Sprint(SuccessColor) + "m"
-					case "warn":
-						word += "\u001b[" + fmt.Sprint(WarningColor) + "m"
-					case "error":
-						word += "\u001b[" + fmt.Sprint(ErrorColor) + "m"
-					case "debug":
-						word += "\u001b[" + fmt.Sprint(DebugColor) + "m"
-					case "trace":
-						word += "\u001b[" + fmt.Sprint(TraceColor) + "m"
-					case "info":
-						word += "\u001b[" + fmt.Sprint(InfoColor) + "m"
-					case "notice":
-						word += "\u001b[" + fmt.Sprint(NoticeColor) + "m"
-					case "command":
-						word += "\u001b[" + fmt.Sprint(CommandColor) + "m"
-					case "disabled":
-						word += "\u001b[" + fmt.Sprint(DisabledColor) + "m"
-					}
-					formattedWords[i] = word
-				} else {
-					formattedWords[i] = word
-				}
-			}
-		}
-	}
-
+	// Use the appropriate color writer for each log level
 	switch strings.ToLower(level) {
 	case "success":
-		successWriter(l.writer, format, formattedWords...)
-
-		if isComplete {
-			successWriter(l.writer, "Completed")
-			os.Exit(0)
-		}
+		successWriter(l.writer, message)
 	case "warn":
-		warningWriter(l.writer, format, formattedWords...)
+		warningWriter(l.writer, message)
 	case "error":
-		errorWriter(l.writer, format, formattedWords...)
-
-		if isComplete {
-			errorWriter(l.writer, "Failed\n")
-			os.Exit(1)
-		}
+		errorWriter(l.writer, message)
 	case "debug":
-		debugWriter(l.writer, format, formattedWords...)
+		debugWriter(l.writer, message)
 	case "trace":
-		traceWriter(l.writer, format, formattedWords...)
+		traceWriter(l.writer, message)
 	case "info":
-		infoWriter(l.writer, format, formattedWords...)
+		infoWriter(l.writer, message)
 	case "notice":
-		noticeWriter(l.writer, format, formattedWords...)
+		noticeWriter(l.writer, message)
 	case "command":
-		commandWriter(l.writer, format, formattedWords...)
+		commandWriter(l.writer, message)
 	case "disabled":
-		disableWriter(l.writer, format, formattedWords...)
+		disableWriter(l.writer, message)
 	}
+}
+
+func successWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[32m%s", message)
+}
+
+func warningWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[33m%s", message)
+}
+
+func errorWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[31m%s", message)
+}
+
+func debugWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[36m%s", message)
+}
+
+func traceWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[37m%s", message)
+}
+
+func infoWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[0m%s", message)
+}
+
+func noticeWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[34m%s", message)
+}
+
+func commandWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[35m%s", message)
+}
+
+func disableWriter(w io.Writer, message string) {
+	fmt.Fprintf(w, "\u001b[90m%s", message)
 }

@@ -11,3 +11,7 @@ const (
 	Debug
 	Trace
 )
+
+func (l Level) String() string {
+	return []string{"error", "warning", "info", "debug", "trace"}[l]
+}
