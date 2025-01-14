@@ -46,6 +46,8 @@ func New() *LoggerService {
 	}
 
 	globalLogger.AddCmdLogger()
+	globalLogger.AddChannelLogger()
+
 	return globalLogger
 }
 

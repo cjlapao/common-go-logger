@@ -207,6 +207,7 @@ func (l *FileLogger) printMessage(format string, icon LoggerIcon, level string, 
 	if !l.enabled {
 		return
 	}
+
 	if !strings.HasSuffix(format, "\n") {
 		format = format + "\n"
 	}
@@ -225,18 +226,7 @@ func (l *FileLogger) printMessage(format string, icon LoggerIcon, level string, 
 	formattedWords := make([]interface{}, len(words))
 	if len(words) > 0 {
 		for i := range words {
-			word := ""
-			switch t := words[i].(type) {
-			case string:
-				word = t
-			default:
-				word = fmt.Sprintf("%v", words[i])
-			}
-
-			if word != "" {
-				word = strings.ReplaceAll(word, "\n\n", "\n")
-				formattedWords[i] = word
-			}
+			formattedWords[i] = fmt.Sprintf("%v", words[i])
 		}
 	}
 
